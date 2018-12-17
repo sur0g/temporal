@@ -121,6 +121,7 @@ class Issue():
         self.title = self.remote_data.fields.summary
         self.worklogs = self.remote_data.fields.worklog.worklogs
         self.description = self.remote_data.fields.description
+        self.reporter = self.remote_data.fields.reporter
 
     def create(self):
         account = requests.get(f'{self.connection.url}/rest/tempo-accounts/1/account/project/{self.project.id}',
