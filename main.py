@@ -1,12 +1,11 @@
-import argparse
 import datetime
+import math
 import re
-import sys
+from configparser import ConfigParser
 
 import requests
 from jira import JIRA
 from urllib3.util import Url
-from configparser import ConfigParser
 
 
 def lazy_property(fn):
@@ -144,8 +143,22 @@ class Issue():
     def delete(self):
         ...
 
-    def log_work(self, seconds, description):
-        ...
+    def log_work(self, seconds: int, description: str) -> dict:
+        # Convert params to jira format
+        days, seconds = divmod(seconds, 3600*8)
+        hours, seconds = divmod(seconds, 3600)
+        minutes = math.floor(seconds/60)
+        time_spent = f'{days}d {hours}h {minutes}m'
+        time_start = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime('%Y-%m-%dT%H:%M:%S.000%z')
+
+        data = {
+            "timeSpent": time_spent,
+            "started": time_start,  # "2018-12-17T21:00:01.089+0000",
+            "comment": description
+        }
+        response = requests.post(f'{self.connection.url}/rest/api/2/issue/{self.key}/worklog', auth=(self.connection.login, self.connection.password), json=data)
+        print(response.json())
+        return response.json()
 
 
 class Transition:
@@ -172,12 +185,13 @@ def main(self, *arguments):
 
 if __name__ == '__main__':
     # transition(transition(*sys.argv[1:]))
-    i = Issue('ban')
+    i = Issue('dan-130')
+    i.log_work(35415, 'Тесто ворклог')
     i.title = 'Test title'
     i.description = 'Test description'
     # i.retrieve()
     # print(i)
-    i.create()
+    # i.create()
 # def main(self, *arguments):
 #     import getopt
 #     options, arguments = getopt.getopt(arguments, '')
