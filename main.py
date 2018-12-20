@@ -7,27 +7,7 @@ import requests
 from jira import JIRA
 from urllib3.util import Url
 
-
-class Config:
-
-    def __init__(self):
-        self.parser = ConfigParser()
-        self.parser.read('config.ini')
-
-        self.url = self.parser.get('main', 'url')
-        self.login = self.parser.get('main', 'login')
-        self.password = self.parser.get('main', 'pass')
-
-    def save(self):
-        config = self.parser
-        config.read('config.ini')
-        if 'main' not in config:
-            config.add_section('main')
-        config.set('main', 'url', self.url)
-        config.set('main', 'login', self.login)
-        config.set('main', 'pass', self.password)
-        with open('config.ini', 'w') as f:
-            config.write(f)
+from utils import Singleton
 
 
 class Jira(JIRA):
@@ -47,6 +27,33 @@ class Jira(JIRA):
         if not re.match('https?.*', value):
             value = f'http://{value}'
         self._url = value
+
+
+@Singleton
+class Connection(Jira):
+    def __init__(self):
+        super().__init__()
+
+
+class Config:
+    def __init__(self):
+        self.parser = ConfigParser()
+        self.parser.read('config.ini')
+
+        self.url = self.parser.get('main', 'url')
+        self.login = self.parser.get('main', 'login')
+        self.password = self.parser.get('main', 'pass')
+
+    def save(self):
+        config = self.parser
+        config.read('config.ini')
+        if 'main' not in config:
+            config.add_section('main')
+        config.set('main', 'url', self.url)
+        config.set('main', 'login', self.login)
+        config.set('main', 'pass', self.password)
+        with open('config.ini', 'w') as f:
+            config.write(f)
 
 
 class Project:
