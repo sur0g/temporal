@@ -179,28 +179,15 @@ class Transition:
 def main(self, *arguments):
     import getopt
     options, arguments = getopt.getopt(arguments, '')
-    for option, valeur in options:
+    for option, value in options:
         pass
 
 
 if __name__ == '__main__':
     # transition(transition(*sys.argv[1:]))
-    i = Issue('dan-130')
-    i.log_work(35415, 'Тесто ворклог')
+    i = Issue('dan-1300')
+    # i.log_work(35415, 'Тесто ворклог')
     i.title = 'Test title'
     i.description = 'Test description'
-    # i.retrieve()
-    # print(i)
-    # i.create()
-# def main(self, *arguments):
-#     import getopt
-#     options, arguments = getopt.getopt(arguments, '')
-#     for option, valeur in options:
-#         pass
-#
-# run = Main()
-# main = run.main
-#
-# if __name__ == '__main__':
-#     import sys
-#     main(*sys.argv[1:])
+    i.retrieve()
+    print(i)
