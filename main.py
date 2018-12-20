@@ -178,6 +178,65 @@ class Transition:
         self._url = Url(value)
 
 
+class Worklog():
+    dt_start: datetime.datetime
+    comment: str
+    issue: Issue
+    latest_start: datetime.datetime
+
+    # latest_start: datetime.datetime
+    def __init__(self):
+        self.worked = datetime.timedelta(0)
+        self.dt_start = datetime.datetime.now(datetime.timezone.utc).astimezone()
+        self.latest_start = None
+        self.issue = None
+
+    def start_pause(self):
+        now = datetime.datetime.now(datetime.timezone.utc).astimezone()
+        if self.latest_start:
+            self.worked += now - self.latest_start
+            self.latest_start = None
+        else:
+            self.latest_start = now
+
+    @property
+    def started(self):
+        return bool(self.latest_start)
+
+    @property
+    def worked(self):
+        if self.started:
+            curr_timer = datetime.datetime.now(datetime.timezone.utc).astimezone() - self.latest_start
+        else:
+            curr_timer = datetime.timedelta(0)
+        return self._worked + curr_timer
+
+    @worked.setter
+    def worked(self, value: (int, str, datetime.timedelta)):
+        """Accepts integer (seconds), str (jira format 2h 57m) and timedelta"""
+        if type(value) is int:
+            self._worked = datetime.timedelta(seconds=value)
+        elif type(value) is str:
+            if not re.fullmatch(r'(\d+d)? ?(\d+h)? ?(\d+m)? ?(\d+s)?', value):
+                raise ValueError('Incorrect format for the jira timedelta')
+            days = re.findall(r'\d+(?=d)', value)[0]
+            hours = re.findall(r'\d+(?=h)', value)[0]
+            minutes = re.findall(r'\d+(?=m)', value)[0]
+            seconds = re.findall(r'\d+(?=s)', value)[0]
+            seconds += minutes * 60 + hours * 3600 + days * 8 * 3600
+            self._worked = datetime.timedelta(seconds=seconds)
+        elif type(value) is datetime.timedelta:
+            self._worked = value
+
+    @worked.deleter
+    def worked(self):
+        self.worked = datetime.timedelta(0)
+
+    def upload(self):
+        if self.worked:
+            self.issue.log_work(self.worked.seconds, self.comment)
+
+
 def main(self, *arguments):
     import getopt
     options, arguments = getopt.getopt(arguments, '')
