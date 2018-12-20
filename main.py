@@ -10,6 +10,7 @@ from urllib3.util import Url
 from utils import Singleton
 
 
+@Singleton
 class Jira(JIRA):
     def __init__(self):
         config = Config()
@@ -27,12 +28,6 @@ class Jira(JIRA):
         if not re.match('https?.*', value):
             value = f'http://{value}'
         self._url = value
-
-
-@Singleton
-class Connection(Jira):
-    def __init__(self):
-        super().__init__()
 
 
 class Config:
@@ -81,7 +76,7 @@ class Issue():
 
     @property
     def connection(self):
-        return Connection()
+        return Jira()
 
     @property
     def project(self):
@@ -157,9 +152,9 @@ class Issue():
 
     def log_work(self, seconds: int, description: str) -> dict:
         # Convert params to jira format
-        days, seconds = divmod(seconds, 3600*8)
+        days, seconds = divmod(seconds, 3600 * 8)
         hours, seconds = divmod(seconds, 3600)
-        minutes = math.floor(seconds/60)
+        minutes = math.floor(seconds / 60)
         time_spent = f'{days}d {hours}h {minutes}m'
         time_start = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime('%Y-%m-%dT%H:%M:%S.000%z')
 
@@ -168,7 +163,8 @@ class Issue():
             "started": time_start,  # "2018-12-17T21:00:01.089+0000",
             "comment": description
         }
-        response = requests.post(f'{self.connection.url}/rest/api/2/issue/{self.key}/worklog', auth=(self.connection.login, self.connection.password), json=data)
+        response = requests.post(f'{self.connection.url}/rest/api/2/issue/{self.key}/worklog',
+                                 auth=(self.connection.login, self.connection.password), json=data)
         print(response.json())
         return response.json()
 
