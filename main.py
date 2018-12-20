@@ -60,6 +60,19 @@ class Jira(JIRA):
         self._url = value
 
 
+class Project:
+    def __init__(self, key: str):
+        self.key = key
+
+    @property
+    def key(self):
+        return self._key
+
+    @key.setter
+    def key(self, value):
+        self._key = value
+
+
 class Issue():
     def __init__(self, key=None):
         self._title = None
