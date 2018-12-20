@@ -243,6 +243,19 @@ class Worklog():
             self.issue.log_work(self.worked.seconds, self.comment)
 
 
+class WorklogList(list):
+    def __init__(self, *args):
+        super().__init__()
+        for item in args:
+            self.append(item)
+
+    def append(self, obj: Issue):
+        if type(obj) is not Issue:
+            raise ValueError('WorklogList may contain only issues')
+        if obj not in self:
+            super().append(obj)
+
+
 def main(self, *arguments):
     import getopt
     options, arguments = getopt.getopt(arguments, '')
