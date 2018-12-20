@@ -76,9 +76,12 @@ class Issue():
         self.remote_data = None
         self._project = None
         self.title = ''
-        self.connection = Jira()
         self._description = ''
         self.key = key
+
+    @property
+    def connection(self):
+        return Connection()
 
     @property
     def project(self):
