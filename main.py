@@ -184,7 +184,7 @@ class Transition:
         self._url = Url(value)
 
 
-class Worklog():
+class Worklog:
     dt_start: datetime.datetime
     comment: str
     issue: Issue
