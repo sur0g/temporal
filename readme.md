@@ -20,3 +20,11 @@ config.password = 'your_jira_pass'
 config.save()
 ```
 This creates the config.ini file into current directory
+1. Manual file creation
+Simply create the config.ini file with the following content
+```config
+[main]
+url = http://jira_server:port
+login = your_jira_login
+pass = your_jira_pass
+```
