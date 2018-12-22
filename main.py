@@ -226,12 +226,16 @@ class Worklog:
         elif type(value) is str:
             if not re.fullmatch(r'(\d+d)? ?(\d+h)? ?(\d+m)? ?(\d+s)?', value):
                 raise ValueError('Incorrect format for the jira timedelta')
-            days = re.findall(r'\d+(?=d)', value)[0]
-            hours = re.findall(r'\d+(?=h)', value)[0]
-            minutes = re.findall(r'\d+(?=m)', value)[0]
-            seconds = re.findall(r'\d+(?=s)', value)[0]
-            seconds += minutes * 60 + hours * 3600 + days * 8 * 3600
-            self._worked = datetime.timedelta(seconds=seconds)
+            days = re.search(r'\d+(?=d)', value)
+            days = int(days[0]) if days else 0
+            hours = re.findall(r'\d+(?=h)', value)
+            hours = int(hours[0]) if hours else 0
+            minutes = re.findall(r'\d+(?=m)', value)
+            minutes = int(minutes[0]) if minutes else 0
+            seconds = re.findall(r'\d+(?=s)', value)
+            seconds = int(seconds[0]) if seconds else 0
+            seconds_total = int(seconds[0]) if seconds else 0 + minutes * 60 + hours * 3600 + days * 8 * 3600
+            self._worked = datetime.timedelta(seconds=seconds_total)
         elif type(value) is datetime.timedelta:
             self._worked = value
 
