@@ -150,7 +150,7 @@ class Issue():
     def delete(self):
         ...
 
-    def log_work(self, seconds: int, description: str) -> dict:
+    def log_work(self, seconds: int, description: str):
         # Convert params to jira format
         days, seconds = divmod(seconds, 3600 * 8)
         hours, seconds = divmod(seconds, 3600)
@@ -166,7 +166,7 @@ class Issue():
         response = requests.post(f'{self.connection.url}/rest/api/2/issue/{self.key}/worklog',
                                  auth=(self.connection.login, self.connection.password), json=data)
         print(response.json())
-        return response.json()
+        return response
 
 
 class Transition:
@@ -196,6 +196,7 @@ class Worklog:
         self.dt_start = datetime.datetime.now(datetime.timezone.utc).astimezone()
         self.latest_start = None
         self.issue = None
+        self.comment = ''
 
     def start_pause(self):
         now = datetime.datetime.now(datetime.timezone.utc).astimezone()
