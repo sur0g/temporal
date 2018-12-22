@@ -243,9 +243,18 @@ class Worklog:
     def worked(self):
         self.worked = datetime.timedelta(0)
 
-    def upload(self):
+    def log_work(self):
+        if self.issue is None:
+            ...  # TODO unfilled issue exception
+
+        if type(self.issue) is str:
+            self.issue = Issue(self.issue)
+
         if self.worked:
-            self.issue.log_work(self.worked.seconds, self.comment)
+            response = self.issue.log_work(self.worked.seconds, self.comment if self.comment else 'No comment')
+            if response.status_code == 201:
+                self.comment = ''
+                del self.worked
 
 
 class WorklogList(list):
